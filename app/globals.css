@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f3f1e8;
+  color: #16241c;
+}
+
+/* Custom range slider styling for the budget input */
+input[type="range"].budget-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #bc5b2e 0%,
+    #bc5b2e var(--fill, 50%),
+    #e4e2d5 var(--fill, 50%),
+    #e4e2d5 100%
+  );
+  outline: none;
+}
+
+input[type="range"].budget-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f3f1e8;
+  border: 3px solid #bc5b2e;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(22, 36, 28, 0.3);
+}
+
+input[type="range"].budget-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f3f1e8;
+  border: 3px solid #bc5b2e;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(22, 36, 28, 0.3);
+}
+
+/* Visible keyboard focus ring, consistent with the palette */
+:focus-visible {
+  outline: 2px solid #bc5b2e;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
