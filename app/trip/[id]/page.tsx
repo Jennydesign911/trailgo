@@ -1,31 +1,56 @@
-import Link from "next/link";
 import { discoverDestinations } from "@/lib/discover-destinations";
+import { getTripPlan } from "@/lib/trip-plans";
+import { TripHero } from "@/components/trip/TripHero";
+import { TripSummaryCard } from "@/components/trip/TripSummaryCard";
+import { TripTimelineSection } from "@/components/trip/TripTimelineSection";
+import { TransportationLegsSection } from "@/components/trip/TransportationLegsSection";
+import { TrailDayPlanSection } from "@/components/trip/TrailDayPlanSection";
+import { TripCostSection } from "@/components/trip/TripCostSection";
+import { TripWeatherSection } from "@/components/trip/TripWeatherSection";
+import { TripStatusCTA } from "@/components/trip/TripStatusCTA";
+import { TripPlanNotFound } from "@/components/trip/TripPlanNotFound";
 
 /**
- * Placeholder trip-planning route. Phase 3 only needs somewhere valid for
- * "Plan This Trip" to link to — the real Door-to-Trail itinerary builder
- * is Phase 4.
+ * Door-to-Trail trip planner. Looks up the destination and its trip plan
+ * by route id from the existing datasets (discoverDestinations from
+ * Phase 2/3, tripPlans from Phase 4) — no duplicate destination records.
  */
 export default function TripPlanPage({ params }: { params: { id: string } }) {
   const destination = discoverDestinations.find((d) => d.id === params.id);
+  const plan = getTripPlan(params.id);
+
+  if (!destination || !plan) {
+    return <TripPlanNotFound id={params.id} />;
+  }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
-      <p className="font-display text-3xl text-ink">
-        {destination ? `Planning ${destination.name}` : "Trip planning"}
-      </p>
-      <p className="mt-3 text-ink/60">
-        The door-to-trail itinerary builder isn&apos;t built yet — this is a
-        placeholder so &ldquo;Plan This Trip&rdquo; has somewhere to go.
-      </p>
-      {destination && (
-        <Link
-          href={`/adventure/${destination.id}`}
-          className="mt-6 rounded-pill border border-mist bg-white/70 px-5 py-2.5 text-sm text-ink/80 hover:border-moss"
-        >
-          ← Back to {destination.name}
-        </Link>
-      )}
+    <main className="min-h-screen bg-paper">
+      <TripHero destination={destination} plan={plan} />
+
+      <div className="mx-auto max-w-4xl space-y-10 px-6 py-10 sm:py-14">
+        <TripSummaryCard
+          plan={plan}
+          estimatedTripCost={destination.estimatedTripCost}
+        />
+
+        <TripTimelineSection steps={plan.timeline} />
+
+        <TransportationLegsSection legs={plan.transportationLegs} />
+
+        <TrailDayPlanSection plan={plan.trailDayPlan} />
+
+        <TripCostSection
+          items={plan.costBreakdown}
+          total={destination.estimatedTripCost}
+        />
+
+        <TripWeatherSection
+          windows={plan.weatherWindows}
+          recommendation={plan.weatherRecommendation}
+        />
+
+        <TripStatusCTA destination={destination} plan={plan} />
+      </div>
     </main>
   );
 }

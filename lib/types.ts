@@ -169,3 +169,92 @@ export interface AdventureDetailFields {
   weatherPreview: WeatherDayPreview[];
 }
 
+/* ---------------------------------------------------------------------- */
+/* Phase 4 — /trip/[id]                                                   */
+/* ---------------------------------------------------------------------- */
+
+/** One stop on the vertical door-to-trail timeline. */
+export interface TripTimelineStep {
+  id: string;
+  time: string; // display string, e.g. "7:15 AM"
+  title: string; // "Leave home", "Metro-North train"
+  kind: "depart" | "transit" | "arrive" | "activity" | "return";
+  /** Origin/destination or route detail, e.g. "Grand Central → Peekskill". */
+  detail?: string;
+  /** Place name, e.g. "New York, NY". */
+  location?: string;
+  durationMinutes?: number;
+  note?: string;
+}
+
+export type TransportationLegMode = "transit" | "driving" | "shuttle" | "walk" | "ferry";
+
+/** One leg of the journey, used by the "Transportation Details" section. */
+export interface TransportationLeg {
+  id: string;
+  mode: TransportationLegMode;
+  label: string; // "Metro-North Hudson Line"
+  from: string;
+  to: string;
+  departure?: string;
+  arrival?: string;
+  durationMinutes: number;
+  /** Approximate one-way fare in USD; omitted for a driving leg. */
+  fare?: number;
+  transferInfo?: string;
+  // Driving-specific fields:
+  distanceMiles?: number;
+  parkingInfo?: string;
+  estimatedDriveCost?: number;
+}
+
+export interface TripCostItem {
+  label: string;
+  amount: number;
+}
+
+/** The outdoor portion of the day, built from the destination's trail data. */
+export interface TrailDayPlan {
+  trailName: string;
+  trailDistanceMiles: number;
+  estimatedDurationMinutes: number;
+  difficulty: Difficulty;
+  elevationGainFeet?: number;
+  suggestedStartTime: string;
+  suggestedFinishTime: string;
+  lunchWindow: string;
+  checklist: string[];
+}
+
+export interface TripWeatherWindow {
+  label: string; // "Morning" / "Afternoon"
+  tempF: number;
+  condition: string;
+}
+
+/**
+ * A full door-to-trail plan for one adventure. Connected to a destination
+ * via `adventureId`, which matches a `DiscoverDestination.id`. Kept as its
+ * own record (rather than folded into `detail`) since a single adventure
+ * could eventually support multiple trip-plan variants (different dates,
+ * start points, or transportation choices).
+ */
+export interface TripPlan {
+  adventureId: string;
+  tripDate: string; // display string, e.g. "Saturday, Oct 18"
+  transportationModeLabel: string; // "Train + Shuttle", "Driving"
+  summary: string;
+  departure: string;
+  arrivalAtTrail: string;
+  trailStartTime: string;
+  returnTime: string;
+  estimatedArrivalHome: string;
+  totalTravelTimeMinutes: number;
+  timeline: TripTimelineStep[];
+  transportationLegs: TransportationLeg[];
+  trailDayPlan: TrailDayPlan;
+  costBreakdown: TripCostItem[];
+  weatherWindows: TripWeatherWindow[];
+  weatherRecommendation: string;
+}
+
