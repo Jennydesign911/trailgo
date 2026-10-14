@@ -4,6 +4,34 @@ export type ActivityType = "hiking" | "camping" | "both";
 
 export type Difficulty = "easy" | "moderate" | "hard";
 
+/** A latitude/longitude pair. Use `VerifiedLocation` for anything shown on a map. */
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+/** A named point used by the map (e.g. a trailhead or campground). */
+export interface LabeledCoordinates extends Coordinates {
+  label: string;
+}
+
+/**
+ * A map location that has been checked against a named, citable source
+ * (for example NY State Parks, NY DEC or the National Park Service).
+ *
+ * The source fields are REQUIRED on purpose: if you can't name where a
+ * coordinate came from, don't add it. Leave the field out instead, and the
+ * map will hide that marker and show "location not verified".
+ */
+export interface VerifiedLocation extends LabeledCoordinates {
+  /** Who published the coordinate, e.g. "NY State Parks". */
+  source: string;
+  /** Page the coordinate was read from. */
+  sourceUrl: string;
+  /** Optional caveat shown under the map, e.g. a closure notice. */
+  note?: string;
+}
+
 /**
  * Shape of the trip search form. This is the single source of truth for
  * what the landing page collects and what it hands off to /discover.
@@ -62,6 +90,12 @@ export interface DiscoverDestination {
   rating: number; // 0–5
   adventureMatchScore: number; // 0–100
   imageGradient: "trail-1" | "trail-2" | "trail-3";
+  /**
+   * Where this destination's map marker goes, with the source it came from.
+   * Omitted when no reliable source has been found — such destinations are
+   * simply not drawn on the map (and the page says so).
+   */
+  coordinates?: VerifiedLocation;
   /**
    * Phase 3 detail-page data (match breakdown, trails, getting there, stay
    * options, cost breakdown, weather). Optional so any destination without
@@ -167,6 +201,16 @@ export interface AdventureDetailFields {
   stayOptions: StayOption[];
   costBreakdown: CostBreakdownItem[];
   weatherPreview: WeatherDayPreview[];
+  /**
+   * Map points for the adventure detail page. Each one is optional and must
+   * carry a source (see `VerifiedLocation`). A missing trailhead or
+   * campground means "not verified yet", not "doesn't exist" — the detail
+   * page tells those two cases apart using `stayOptions`.
+   */
+  mapMarkers: {
+    trailhead?: VerifiedLocation;
+    campground?: VerifiedLocation;
+  };
 }
 
 /* ---------------------------------------------------------------------- */

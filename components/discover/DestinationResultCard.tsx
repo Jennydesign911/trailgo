@@ -56,11 +56,23 @@ function TransitIcon() {
 
 export function DestinationResultCard({
   destination,
+  highlighted = false,
+  onHoverStart,
+  onHoverEnd,
 }: {
   destination: DiscoverDestination;
+  highlighted?: boolean;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
 }) {
   return (
-    <article className="overflow-hidden rounded-card border border-mist bg-white/70 shadow-soft">
+    <article
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+      className={`overflow-hidden rounded-card border bg-white/70 shadow-soft transition-colors ${
+        highlighted ? "border-clay ring-2 ring-clay/40" : "border-mist"
+      }`}
+    >
       <div
         className={`relative h-40 w-full ${gradientClass[destination.imageGradient]}`}
         role="img"

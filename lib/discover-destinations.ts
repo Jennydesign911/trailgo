@@ -1,4 +1,26 @@
-import { DiscoverDestination } from "./types";
+import { DiscoverDestination, VerifiedLocation } from "./types";
+
+/**
+ * MAP LOCATION POLICY
+ * Every `coordinates` / `mapMarkers` entry below is a `VerifiedLocation`:
+ * it must name the official source it was read from. If a reliable source
+ * could not be found, the entry is deliberately LEFT OUT — the map hides it
+ * and the page says "location not verified". Never fill a gap with an
+ * estimate or an offset from another point.
+ *
+ * "Verified" here means: matches the cited source's published coordinate.
+ * It does not mean surveyed on the ground.
+ */
+
+// Breakneck Ridge's destination point IS its trailhead, so both fields share one object.
+const BREAKNECK_TRAILHEAD: VerifiedLocation = {
+  lat: 41.443278,
+  lng: -73.978005,
+  label: "Breakneck Ridge Trailhead",
+  source: "NY State Parks (Hudson Highlands State Park Preserve)",
+  sourceUrl: "https://parks.ny.gov/visit/state-parks/hudson-highlands-state-park-preserve",
+  note: "NY State Parks reports the Breakneck Ridge trailhead and nearby Metro-North station closed from April 21, 2025 for about two years of construction. Check before you go.",
+};
 
 /**
  * Mock destinations reachable from the New York City region, used to
@@ -29,6 +51,13 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.6,
     adventureMatchScore: 94,
     imageGradient: "trail-1",
+    coordinates: {
+      lat: 41.31294,
+      lng: -73.98895,
+      label: "Bear Mountain State Park",
+      source: "NY State Parks",
+      sourceUrl: "https://parks.ny.gov/parks/13/details.aspx",
+    },
     detail: {
       matchBreakdown: {
         accessibility: 96,
@@ -122,6 +151,10 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 58, condition: "Light rain" },
         { day: "Sunday", tempF: 64, condition: "Sunny" },
       ],
+      // Trailhead: not verified yet (no source found for the Major Welch trailhead).
+      // Campground: none. NY State Parks lists Anthony Wayne Recreation Area as a
+      // day-use area, and Harriman's camping areas are Beaver Pond and Sebago Cabins.
+      mapMarkers: {},
     },
   },
   {
@@ -140,6 +173,13 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.5,
     adventureMatchScore: 90,
     imageGradient: "trail-2",
+    coordinates: {
+      lat: 41.250195,
+      lng: -74.043221,
+      label: "Harriman State Park",
+      source: "NY State Parks",
+      sourceUrl: "https://parks.ny.gov/parks/145/",
+    },
     detail: {
       matchBreakdown: {
         accessibility: 92,
@@ -231,6 +271,16 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 59, condition: "Light rain" },
         { day: "Sunday", tempF: 65, condition: "Sunny" },
       ],
+      // Trailhead: not verified yet (no source found for the Reeves Brook trailhead).
+      mapMarkers: {
+        campground: {
+          lat: 41.234271,
+          lng: -74.06636,
+          label: "Beaver Pond Campgrounds",
+          source: "NY State Parks",
+          sourceUrl: "https://parks.ny.gov/parks/beaverpond/details.aspx",
+        },
+      },
     },
   },
   {
@@ -249,6 +299,7 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.7,
     adventureMatchScore: 88,
     imageGradient: "trail-3",
+    coordinates: BREAKNECK_TRAILHEAD,
     detail: {
       matchBreakdown: {
         accessibility: 90,
@@ -328,6 +379,17 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 57, condition: "Light rain" },
         { day: "Sunday", tempF: 63, condition: "Sunny" },
       ],
+      mapMarkers: {
+        trailhead: BREAKNECK_TRAILHEAD,
+        campground: {
+          lat: 41.466178,
+          lng: -73.824529,
+          label: "Fahnestock State Park Campground (entrance)",
+          source: "NY State Parks (Clarence Fahnestock Memorial State Park)",
+          sourceUrl: "https://parks.ny.gov/visit/state-parks/fahnestock-state-park-clarence-fahnestock",
+          note: "NY State Parks says this campground is closed for the 2026 season (new bathhouse construction).",
+        },
+      },
     },
   },
   {
@@ -346,6 +408,13 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.6,
     adventureMatchScore: 78,
     imageGradient: "trail-1",
+    coordinates: {
+      lat: 41.7352,
+      lng: -74.238985,
+      label: "Minnewaska main entrance",
+      source: "NY State Parks",
+      sourceUrl: "https://parks.ny.gov/visit/state-parks/minnewaska-state-park-preserve",
+    },
     detail: {
       matchBreakdown: {
         accessibility: 70,
@@ -414,6 +483,11 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 60, condition: "Partly cloudy" },
         { day: "Sunday", tempF: 66, condition: "Sunny" },
       ],
+      // Trailhead: not verified yet.
+      // Campground: none inside the park. NY State Parks points campers to the
+      // Samuel F. Pryor III Shawangunk Gateway Campground (953 NY-299, Gardiner);
+      // its coordinates are not verified yet, so it is not drawn.
+      mapMarkers: {},
     },
   },
   {
@@ -432,6 +506,7 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.8,
     adventureMatchScore: 82,
     imageGradient: "trail-2",
+    // coordinates: not verified yet — no reliable source found, so this destination is not drawn on the map.
     detail: {
       matchBreakdown: {
         accessibility: 72,
@@ -502,6 +577,8 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 59, condition: "Partly cloudy" },
         { day: "Sunday", tempF: 65, condition: "Sunny" },
       ],
+      // Trailhead: not verified yet. No campground listed for this destination.
+      mapMarkers: {},
     },
   },
   {
@@ -520,6 +597,8 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.5,
     adventureMatchScore: 75,
     imageGradient: "trail-3",
+    // coordinates: not verified yet — the Catskills are a region with no single official point,
+    // so this destination is not drawn on the Discover map.
     detail: {
       matchBreakdown: {
         accessibility: 60,
@@ -602,6 +681,16 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 50, condition: "Rain" },
         { day: "Sunday", tempF: 58, condition: "Partly cloudy" },
       ],
+      // Trailhead: not verified yet (no source found for the Kaaterskill Falls trailhead).
+      mapMarkers: {
+        campground: {
+          lat: 42.201525,
+          lng: -74.056165,
+          label: "North-South Lake Campground",
+          source: "NY State DEC",
+          sourceUrl: "https://www.dec.ny.gov/outdoor/24487.html",
+        },
+      },
     },
   },
   {
@@ -620,6 +709,7 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.4,
     adventureMatchScore: 71,
     imageGradient: "trail-1",
+    // coordinates: not verified yet — no reliable source found, so this destination is not drawn on the map.
     detail: {
       matchBreakdown: {
         accessibility: 62,
@@ -689,6 +779,8 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 61, condition: "Partly cloudy" },
         { day: "Sunday", tempF: 67, condition: "Sunny" },
       ],
+      // Trailhead and campground: not verified yet (no official coordinates found).
+      mapMarkers: {},
     },
   },
   {
@@ -707,6 +799,14 @@ export const discoverDestinations: DiscoverDestination[] = [
     rating: 4.3,
     adventureMatchScore: 68,
     imageGradient: "trail-2",
+    coordinates: {
+      lat: 40.656986,
+      lng: -73.103649,
+      label: "Sailors Haven visitor area",
+      source: "National Park Service (NPS GPS record, Sailors Haven)",
+      sourceUrl: "https://npgallery.nps.gov/AssetDetail/84870d55-1616-4ee8-87d6-dad9cbbc3591",
+      note: "Marks the Sailors Haven visitor area. Fire Island is a 32-mile barrier island, so this is one area, not the whole seashore.",
+    },
     detail: {
       matchBreakdown: {
         accessibility: 75,
@@ -788,6 +888,10 @@ export const discoverDestinations: DiscoverDestination[] = [
         { day: "Saturday", tempF: 66, condition: "Breezy" },
         { day: "Sunday", tempF: 70, condition: "Sunny" },
       ],
+      // Trailhead: not verified yet.
+      // Campground: Watch Hill is a real NPS campground but is far east of Sailors Haven,
+      // and no official coordinate for the campground itself was found, so it is not drawn.
+      mapMarkers: {},
     },
   },
 ];

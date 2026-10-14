@@ -55,7 +55,7 @@ export default function AdventureDetailPage({
 
         <WeatherSection days={detail.weatherPreview} />
 
-        <AdventureMapSection />
+        <AdventureMapSection destination={destination} />
 
         <section className="flex flex-col items-center gap-3 rounded-card border border-mist bg-white/70 px-6 py-10 text-center shadow-soft">
           <h2 className="font-display text-2xl text-ink">
