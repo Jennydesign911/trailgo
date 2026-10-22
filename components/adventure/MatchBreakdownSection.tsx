@@ -1,4 +1,5 @@
 import { AdventureMatchBreakdown } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const categoryLabel: Record<keyof AdventureMatchBreakdown, string> = {
   accessibility: "Accessibility",
@@ -35,7 +36,14 @@ export function MatchBreakdownSection({
         <span className="font-display text-3xl text-clay-dark">{score}%</span>
       </div>
 
-      <p className="mt-2 max-w-xl text-ink/70">{summary}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <SampleDataBadge />
+        <span className="text-xs text-ink/60">
+          A fixed sample score, not personalized to your search.
+        </span>
+      </div>
+
+      <p className="mt-3 max-w-xl text-ink/70">{summary}</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {categories.map(([key, value]) => (

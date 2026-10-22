@@ -1,4 +1,5 @@
 import { TrailDayPlan } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const difficultyLabel: Record<TrailDayPlan["difficulty"], string> = {
   easy: "Easy",
@@ -9,7 +10,14 @@ const difficultyLabel: Record<TrailDayPlan["difficulty"], string> = {
 export function TrailDayPlanSection({ plan }: { plan: TrailDayPlan }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-ink">Trail Day Plan</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">Trail Day Plan</h2>
+        <SampleDataBadge />
+      </div>
+      <p className="mt-1 text-sm text-ink/60">
+        Trail distance, duration, elevation and suggested times are sample
+        values, not measured data.
+      </p>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_260px]">
         <div className="rounded-card border border-mist bg-white/70 p-5 shadow-soft sm:p-6">

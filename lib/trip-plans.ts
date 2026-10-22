@@ -19,7 +19,7 @@ const CHECKLIST = [
 export const tripPlans: TripPlan[] = [
   {
     adventureId: "bear-mountain-state-park",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Train + Shuttle",
     summary:
       "A train-and-shuttle day trip to Bear Mountain, with time for the Major Welch Trail and a lakeside lunch.",
@@ -94,7 +94,7 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "harriman-state-park",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Bus",
     summary:
       "A bus day trip into Harriman, with a full loop around Pine Meadow Lake.",
@@ -166,10 +166,10 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "breakneck-ridge",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Train",
     summary:
-      "A direct train trip to Breakneck Ridge for a short, hard climb with big Hudson views.",
+      "Sample itinerary only: NY State Parks reports the Breakneck Ridge trailhead and Metro-North station closed for construction, so this plan cannot be followed today.",
     departure: "7:45 AM",
     arrivalAtTrail: "9:20 AM",
     trailStartTime: "9:30 AM",
@@ -197,7 +197,7 @@ export const tripPlans: TripPlan[] = [
         arrival: "9:20 AM",
         durationMinutes: 75,
         fare: 17,
-        transferInfo: "Seasonal weekend stop — confirm the train makes this station before you go.",
+        transferInfo: "NY State Parks reports this station closed for construction (notice still posted on 2026-10-14). Confirm with Metro-North before you plan around it.",
       },
     ],
     trailDayPlan: {
@@ -217,6 +217,8 @@ export const tripPlans: TripPlan[] = [
       { label: "Park/trail fees", amount: 0 },
       { label: "Buffer", amount: 5 },
     ],
+    notice:
+      "NY State Parks reports the Breakneck Ridge trailhead, nearby trails and the Breakneck Ridge Metro-North station closed from April 21, 2025 for a two-year period. The notice was still posted on 2026-10-14. Do not plan a trip here until it reopens.",
     weatherWindows: [
       { label: "Morning", tempF: 49, condition: "Windy" },
       { label: "Afternoon", tempF: 57, condition: "Light rain" },
@@ -226,7 +228,7 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "minnewaska-state-park",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Driving",
     summary:
       "A driving day trip to Minnewaska for an easy, scenic loop around the sky lake.",
@@ -285,7 +287,7 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "mohonk-preserve",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Driving",
     summary:
       "A driving day trip to Mohonk for a moderate carriage-road loop beneath the Mountain House.",
@@ -344,7 +346,7 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "catskill-mountains",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Driving",
     summary:
       "A longer driving day into the Catskills, with time for Kaaterskill Falls and the North-South Lake area.",
@@ -404,7 +406,7 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "delaware-water-gap",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Driving",
     summary:
       "A driving day trip to the Water Gap for a steep climb up Mount Tammany with river views the whole way.",
@@ -462,10 +464,10 @@ export const tripPlans: TripPlan[] = [
   },
   {
     adventureId: "fire-island-national-seashore",
-    tripDate: "Saturday, Oct 18",
+    tripDate: "Saturday (sample day)",
     transportationModeLabel: "Train + Ferry",
     summary:
-      "A car-free day on Fire Island: LIRR to Sayville, then the ferry across to the trailhead.",
+      "A car-free day on Fire Island: LIRR to Sayville, then the ferry across to Sailors Haven and the Sunken Forest boardwalk.",
     departure: "6:30 AM",
     arrivalAtTrail: "9:15 AM",
     trailStartTime: "9:30 AM",
@@ -478,9 +480,9 @@ export const tripPlans: TripPlan[] = [
       { id: "s3", time: "7:15 AM", title: "LIRR train", kind: "transit", detail: "Penn Station → Sayville", durationMinutes: 75 },
       { id: "s4", time: "8:30 AM", title: "Arrive Sayville", kind: "arrive" },
       { id: "s5", time: "8:45 AM", title: "Fire Island Ferry", kind: "transit", detail: "Sayville → Sailors Haven", durationMinutes: 30 },
-      { id: "s6", time: "9:15 AM", title: "Arrive at trailhead", kind: "arrive", note: "The ferry docks right at Sailors Haven." },
-      { id: "s7", time: "9:30 AM", title: "Start hike", kind: "activity", detail: "Lighthouse Trail", durationMinutes: 90 },
-      { id: "s8", time: "11:00 AM", title: "Finish hike / beach time", kind: "activity", note: "Sunken Forest boardwalk is a short, easy add-on nearby." },
+      { id: "s6", time: "9:15 AM", title: "Arrive at Sailors Haven", kind: "arrive", note: "The ferry docks at Sailors Haven, where the Sunken Forest boardwalk starts." },
+      { id: "s7", time: "9:30 AM", title: "Start hike", kind: "activity", detail: "Sunken Forest Boardwalk", durationMinutes: 60 },
+      { id: "s8", time: "10:30 AM", title: "Finish hike / beach time", kind: "activity", note: "Time to relax at Sailors Haven before the return ferry." },
       { id: "s9", time: "1:00 PM", title: "Begin return trip", kind: "return" },
       { id: "s10", time: "3:00 PM", title: "Arrive home", kind: "arrive" },
     ],
@@ -507,17 +509,17 @@ export const tripPlans: TripPlan[] = [
         arrival: "9:15 AM",
         durationMinutes: 30,
         fare: 12,
-        transferInfo: "Ferries run on a fixed seasonal schedule — check departure times ahead.",
+        transferInfo: "Ferries run on a seasonal schedule (typically mid-May to mid-October) — confirm departure times and that service is running before you go.",
       },
     ],
     trailDayPlan: {
-      trailName: "Lighthouse Trail",
-      trailDistanceMiles: 3.0,
-      estimatedDurationMinutes: 90,
+      trailName: "Sunken Forest Boardwalk",
+      trailDistanceMiles: 1.5,
+      estimatedDurationMinutes: 60,
       difficulty: "easy",
-      elevationGainFeet: 40,
+      elevationGainFeet: 20,
       suggestedStartTime: "9:30 AM",
-      suggestedFinishTime: "11:00 AM",
+      suggestedFinishTime: "10:30 AM",
       lunchWindow: "11:00 – 11:45 AM",
       checklist: CHECKLIST,
     },

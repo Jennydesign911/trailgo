@@ -26,6 +26,8 @@ export const weekendEscapes: Destination[] = [
     reachableBy: ["car", "no-car"],
     estimatedCost: 45,
     imageGradient: "trail-3",
+    notice:
+      "Temporarily unavailable: NY State Parks reports the trailhead and Metro-North station closed for construction (notice still posted on 2026-10-14).",
   },
   {
     id: "minnewaska-state-park",

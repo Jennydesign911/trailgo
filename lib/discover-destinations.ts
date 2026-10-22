@@ -3,14 +3,24 @@ import { DiscoverDestination, VerifiedLocation } from "./types";
 /**
  * MAP LOCATION POLICY
  * Every `coordinates` / `mapMarkers` entry below is a `VerifiedLocation`:
- * it must name the official source it was read from. If a reliable source
- * could not be found, the entry is deliberately LEFT OUT — the map hides it
- * and the page says "location not verified". Never fill a gap with an
- * estimate or an offset from another point.
+ * it must name the official source it was read from and the date it was read
+ * (`lastChecked`). If a reliable source could not be found, the entry is
+ * deliberately LEFT OUT — the map hides it and the page says "location not
+ * verified". Never fill a gap with an estimate or an offset from another point.
  *
  * "Verified" here means: matches the cited source's published coordinate.
- * It does not mean surveyed on the ground.
+ * It does not mean surveyed on the ground, and it NEVER means "open now":
+ * availability is a separate field and stays "unknown" unless a source says
+ * otherwise.
+ *
+ * Everything that is not a verified location or an explicit `existenceSource`
+ * (costs, ratings, match scores, trail stats, stay prices, transit steps,
+ * weather) is SAMPLE data: hand-written placeholders, not real recommendations.
  */
+
+// Dates (YYYY-MM-DD) on which each source page was last read.
+const READ_ON_OCT_9 = "2026-10-09";
+const READ_ON_OCT_14 = "2026-10-14";
 
 // Breakneck Ridge's destination point IS its trailhead, so both fields share one object.
 const BREAKNECK_TRAILHEAD: VerifiedLocation = {
@@ -19,7 +29,44 @@ const BREAKNECK_TRAILHEAD: VerifiedLocation = {
   label: "Breakneck Ridge Trailhead",
   source: "NY State Parks (Hudson Highlands State Park Preserve)",
   sourceUrl: "https://parks.ny.gov/visit/state-parks/hudson-highlands-state-park-preserve",
-  note: "NY State Parks reports the Breakneck Ridge trailhead and nearby Metro-North station closed from April 21, 2025 for about two years of construction. Check before you go.",
+  lastChecked: READ_ON_OCT_14,
+  availability: "temporarily_unavailable",
+  availabilityNote:
+    "NY State Parks notice: the Breakneck Ridge trailhead, other trails in the area and the Breakneck Ridge Metro-North station close from April 21, 2025 for a two-year period. The notice was still posted when checked on 2026-10-14.",
+  note: "NY State Parks reports the Breakneck Ridge trailhead and nearby Metro-North station closed for about two years from April 21, 2025 (notice still posted on 2026-10-14). Check before you go.",
+};
+
+// Campgrounds with a verified location. Each is shared by the map marker AND the
+// matching stay card, so the two can never disagree (e.g. about a closure).
+const BEAVER_POND_CAMPGROUNDS: VerifiedLocation = {
+  lat: 41.234271,
+  lng: -74.06636,
+  label: "Beaver Pond Campgrounds",
+  source: "NY State Parks",
+  sourceUrl: "https://parks.ny.gov/parks/beaverpond/details.aspx",
+  lastChecked: READ_ON_OCT_9,
+};
+
+const FAHNESTOCK_CAMPGROUND: VerifiedLocation = {
+  lat: 41.466178,
+  lng: -73.824529,
+  label: "Fahnestock State Park Campground (entrance)",
+  source: "NY State Parks (Clarence Fahnestock Memorial State Park)",
+  sourceUrl: "https://parks.ny.gov/visit/state-parks/fahnestock-state-park-clarence-fahnestock",
+  lastChecked: READ_ON_OCT_14,
+  availability: "temporarily_unavailable",
+  availabilityNote:
+    "NY State Parks says the campground is closed for the 2026 season for construction of a new bathhouse. The notice was still posted when checked on 2026-10-14.",
+  note: "NY State Parks says this campground is closed for the 2026 season (new bathhouse construction; still posted on 2026-10-14).",
+};
+
+const NORTH_SOUTH_LAKE_CAMPGROUND: VerifiedLocation = {
+  lat: 42.201525,
+  lng: -74.056165,
+  label: "North-South Lake Campground",
+  source: "NY State DEC",
+  sourceUrl: "https://www.dec.ny.gov/outdoor/24487.html",
+  lastChecked: READ_ON_OCT_9,
 };
 
 /**
@@ -41,7 +88,7 @@ export const discoverDestinations: DiscoverDestination[] = [
     region: "Hudson Highlands, NY",
     shortDescription:
       "A classic first hike with summit views over the Hudson, plus a lake and picnic areas for a slower day.",
-    activities: ["hiking", "camping"],
+    activities: ["hiking"], // No campground at Bear Mountain: NY State Parks lists camping only in neighboring Harriman.
     difficulty: "moderate",
     estimatedTravelTimeMinutes: 70,
     transportationOptions: ["car", "no-car"],
@@ -57,6 +104,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       label: "Bear Mountain State Park",
       source: "NY State Parks",
       sourceUrl: "https://parks.ny.gov/parks/13/details.aspx",
+      lastChecked: READ_ON_OCT_9,
     },
     detail: {
       matchBreakdown: {
@@ -67,7 +115,7 @@ export const discoverDestinations: DiscoverDestination[] = [
         travelTime: 94,
       },
       matchSummary:
-        "Great match for a moderate hike close to the city, with train access and a lake to cool off in afterward.",
+        "Great match for a moderate hike close to the city, with train access and a lake nearby.",
       trails: [
         {
           id: "major-welch-trail",
@@ -130,19 +178,10 @@ export const discoverDestinations: DiscoverDestination[] = [
           description:
             "Historic lakeside inn steps from the main trailhead, with lake-view rooms.",
         },
-        {
-          id: "anthony-wayne-campground",
-          name: "Anthony Wayne Campground",
-          type: "Campground",
-          nightlyCost: 30,
-          distanceFromTrailMiles: 3.5,
-          description:
-            "First-come tent sites in neighboring Harriman State Park.",
-        },
       ],
       costBreakdown: [
         { label: "Transportation", amount: 25 },
-        { label: "Camping / Lodging", amount: 20 },
+        { label: "Lodging", amount: 20 },
         { label: "Food", amount: 20 },
         { label: "Park / Trail fees", amount: 5 },
       ],
@@ -179,6 +218,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       label: "Harriman State Park",
       source: "NY State Parks",
       sourceUrl: "https://parks.ny.gov/parks/145/",
+      lastChecked: READ_ON_OCT_9,
     },
     detail: {
       matchBreakdown: {
@@ -244,20 +284,17 @@ export const discoverDestinations: DiscoverDestination[] = [
       stayOptions: [
         {
           id: "beaver-pond-campground",
-          name: "Beaver Pond Campground",
+          name: "Beaver Pond Campgrounds",
           type: "Campground",
           nightlyCost: 28,
           distanceFromTrailMiles: 1.0,
-          description:
-            "Quiet tent sites near Lake Welch, close to several trailheads.",
-        },
-        {
-          id: "stony-point-budget-inn",
-          name: "Stony Point Budget Inn",
-          type: "Budget lodging",
-          nightlyCost: 95,
-          distanceFromTrailMiles: 6.0,
-          description: "Simple roadside motel for a no-frills basecamp.",
+          description: "Campground inside Harriman State Park.",
+          location: BEAVER_POND_CAMPGROUNDS,
+          existenceSource: {
+            name: "NY State Parks",
+            url: "https://parks.ny.gov/parks/beaverpond/details.aspx",
+            lastChecked: READ_ON_OCT_9,
+          },
         },
       ],
       costBreakdown: [
@@ -273,13 +310,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       ],
       // Trailhead: not verified yet (no source found for the Reeves Brook trailhead).
       mapMarkers: {
-        campground: {
-          lat: 41.234271,
-          lng: -74.06636,
-          label: "Beaver Pond Campgrounds",
-          source: "NY State Parks",
-          sourceUrl: "https://parks.ny.gov/parks/beaverpond/details.aspx",
-        },
+        campground: BEAVER_POND_CAMPGROUNDS,
       },
     },
   },
@@ -309,7 +340,7 @@ export const discoverDestinations: DiscoverDestination[] = [
         travelTime: 95,
       },
       matchSummary:
-        "A strong match if you're after a short, hard workout with big views, easily reached without a car.",
+        "A short, hard workout with big views. Note: NY State Parks reports the trailhead and station closed for construction, so check before planning.",
       trails: [
         {
           id: "breakneck-ridge-trail",
@@ -365,7 +396,14 @@ export const discoverDestinations: DiscoverDestination[] = [
           type: "Campground",
           nightlyCost: 22,
           distanceFromTrailMiles: 8.0,
-          description: "Family-friendly tent sites a short drive north.",
+          description:
+            "Campground in Clarence Fahnestock Memorial State Park. NY State Parks lists it as closed for the 2026 season.",
+          location: FAHNESTOCK_CAMPGROUND,
+          existenceSource: {
+            name: "NY State Parks",
+            url: "https://parks.ny.gov/visit/state-parks/fahnestock-state-park-clarence-fahnestock",
+            lastChecked: READ_ON_OCT_14,
+          },
         },
       ],
       costBreakdown: [
@@ -381,14 +419,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       ],
       mapMarkers: {
         trailhead: BREAKNECK_TRAILHEAD,
-        campground: {
-          lat: 41.466178,
-          lng: -73.824529,
-          label: "Fahnestock State Park Campground (entrance)",
-          source: "NY State Parks (Clarence Fahnestock Memorial State Park)",
-          sourceUrl: "https://parks.ny.gov/visit/state-parks/fahnestock-state-park-clarence-fahnestock",
-          note: "NY State Parks says this campground is closed for the 2026 season (new bathhouse construction).",
-        },
+        campground: FAHNESTOCK_CAMPGROUND,
       },
     },
   },
@@ -414,6 +445,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       label: "Minnewaska main entrance",
       source: "NY State Parks",
       sourceUrl: "https://parks.ny.gov/visit/state-parks/minnewaska-state-park-preserve",
+      lastChecked: READ_ON_OCT_9,
     },
     detail: {
       matchBreakdown: {
@@ -460,21 +492,12 @@ export const discoverDestinations: DiscoverDestination[] = [
           name: "Minnewaska Lodge",
           type: "Cabin",
           nightlyCost: 210,
-          distanceFromTrailMiles: 2.0,
-          description: "Eco-friendly lodge just outside the park entrance.",
-        },
-        {
-          id: "sams-point-camping-area",
-          name: "Sam's Point Camping Area",
-          type: "Campground",
-          nightlyCost: 25,
-          distanceFromTrailMiles: 5.0,
-          description: "Primitive, backcountry-style sites near Sam's Point.",
+          description: "Lodge in the Shawangunk Mountains area.",
         },
       ],
       costBreakdown: [
         { label: "Transportation", amount: 30 },
-        { label: "Camping / Lodging", amount: 25 },
+        { label: "Lodging", amount: 25 },
         { label: "Food", amount: 20 },
         { label: "Park / Trail fees", amount: 5 },
       ],
@@ -568,7 +591,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       ],
       costBreakdown: [
         { label: "Transportation", amount: 30 },
-        { label: "Camping / Lodging", amount: 35 },
+        { label: "Lodging", amount: 35 },
         { label: "Food", amount: 20 },
         { label: "Park / Trail fees", amount: 5 },
       ],
@@ -658,16 +681,21 @@ export const discoverDestinations: DiscoverDestination[] = [
           type: "Campground",
           nightlyCost: 28,
           distanceFromTrailMiles: 2.0,
-          description:
-            "DEC campground near Kaaterskill Falls with lake swimming.",
+          description: "NY State DEC campground at North-South Lake.",
+          location: NORTH_SOUTH_LAKE_CAMPGROUND,
+          existenceSource: {
+            name: "NY State DEC",
+            url: "https://www.dec.ny.gov/outdoor/24487.html",
+            lastChecked: READ_ON_OCT_9,
+          },
         },
         {
-          id: "sunrise-motel-tannersville",
-          name: "Sunrise Motel Tannersville",
+          id: "sunview-motel-tannersville",
+          name: "SunView Motel",
           type: "Budget lodging",
           nightlyCost: 110,
           distanceFromTrailMiles: 7.0,
-          description: "No-frills base for exploring the Catskill high peaks.",
+          description: "Motel on Main Street in Tannersville, a base for exploring the Catskills.",
         },
       ],
       costBreakdown: [
@@ -683,13 +711,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       ],
       // Trailhead: not verified yet (no source found for the Kaaterskill Falls trailhead).
       mapMarkers: {
-        campground: {
-          lat: 42.201525,
-          lng: -74.056165,
-          label: "North-South Lake Campground",
-          source: "NY State DEC",
-          sourceUrl: "https://www.dec.ny.gov/outdoor/24487.html",
-        },
+        campground: NORTH_SOUTH_LAKE_CAMPGROUND,
       },
     },
   },
@@ -756,8 +778,13 @@ export const discoverDestinations: DiscoverDestination[] = [
           name: "Dingmans Campground",
           type: "Campground",
           nightlyCost: 35,
-          distanceFromTrailMiles: 3.0,
-          description: "Riverside tent sites near Dingmans Falls.",
+          description:
+            "Campground on the Pennsylvania side of the recreation area. Mount Tammany is in New Jersey.",
+          existenceSource: {
+            name: "National Park Service (Dingmans Campground map)",
+            url: "https://www.nps.gov/dewa/planyourvisit/upload/DingmansCampgroundMap-1.pdf",
+            lastChecked: READ_ON_OCT_9,
+          },
         },
         {
           id: "deer-head-inn-lodging",
@@ -788,14 +815,14 @@ export const discoverDestinations: DiscoverDestination[] = [
     name: "Fire Island National Seashore",
     region: "Long Island, NY",
     shortDescription:
-      "Car-free barrier island with dune trails, a lighthouse walk, and beachside camping by ferry.",
+      "Car-free barrier island with a boardwalk trail through the Sunken Forest and seasonal camping at Watch Hill, reached by ferry.",
     activities: ["hiking", "camping"],
     difficulty: "easy",
     estimatedTravelTimeMinutes: 120,
     transportationOptions: ["no-car"],
     carFreeFriendly: true,
     estimatedTripCost: 130,
-    trailDistanceMiles: 3.0,
+    trailDistanceMiles: 1.5, // Sunken Forest boardwalk length, per the National Park Service.
     rating: 4.3,
     adventureMatchScore: 68,
     imageGradient: "trail-2",
@@ -805,6 +832,7 @@ export const discoverDestinations: DiscoverDestination[] = [
       label: "Sailors Haven visitor area",
       source: "National Park Service (NPS GPS record, Sailors Haven)",
       sourceUrl: "https://npgallery.nps.gov/AssetDetail/84870d55-1616-4ee8-87d6-dad9cbbc3591",
+      lastChecked: READ_ON_OCT_9,
       note: "Marks the Sailors Haven visitor area. Fire Island is a 32-mile barrier island, so this is one area, not the whole seashore.",
     },
     detail: {
@@ -829,17 +857,6 @@ export const discoverDestinations: DiscoverDestination[] = [
           description:
             "A flat boardwalk loop through a rare maritime holly forest right behind the dunes.",
         },
-        {
-          id: "lighthouse-trail",
-          name: "Lighthouse Trail",
-          distanceMiles: 3.0,
-          durationMinutes: 90,
-          elevationGainFeet: 40,
-          difficulty: "easy",
-          routeType: "Out & Back",
-          description:
-            "An easy dune walk out to the historic Fire Island Lighthouse.",
-        },
       ],
       transportationDetails: {
         driving: {
@@ -855,7 +872,7 @@ export const discoverDestinations: DiscoverDestination[] = [
           ],
           travelTimeMinutes: 120,
           lastMileInfo:
-            "The ferry docks directly at the trailhead — no vehicles are allowed on the island.",
+            "The ferry docks at Sailors Haven, where the Sunken Forest boardwalk starts. Ferry service is seasonal (typically mid-May to mid-October); confirm it is running before you go.",
         },
       },
       stayOptions: [
@@ -864,17 +881,13 @@ export const discoverDestinations: DiscoverDestination[] = [
           name: "Watch Hill Campground",
           type: "Campground",
           nightlyCost: 35,
-          distanceFromTrailMiles: 0.3,
           description:
-            "NPS-run oceanside camping, reservable ahead and reached by ferry.",
-        },
-        {
-          id: "sunken-forest-bnb",
-          name: "Sunken Forest B&B",
-          type: "Budget lodging",
-          nightlyCost: 195,
-          distanceFromTrailMiles: 1.0,
-          description: "Small inn near the Sailors Haven marina.",
+            "Concession-run campground at Watch Hill, reached by the Watch Hill ferry from Patchogue (not the Sayville ferry to Sailors Haven). NPS lists the Watch Hill area as seasonal, May to mid-October.",
+          existenceSource: {
+            name: "National Park Service (Fire Island camping)",
+            url: "https://www.nps.gov/fiis/planyourvisit/camping.htm",
+            lastChecked: READ_ON_OCT_14,
+          },
         },
       ],
       costBreakdown: [

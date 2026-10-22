@@ -12,6 +12,13 @@ import {
   sortDestinations,
 } from "@/lib/discover-filters";
 import { DiscoverDestination, DiscoverFilters, SortOption } from "@/lib/types";
+import {
+  SAMPLE_LABEL,
+  availabilityPillHtml,
+  escapeHtml,
+  getAvailabilityNotice,
+} from "@/lib/status-labels";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 interface DiscoverResultsProps {
   destinations: DiscoverDestination[];
@@ -28,19 +35,25 @@ function buildPopupHtml(destination: DiscoverDestination): string {
   const markerLabel = destination.coordinates?.label;
   const markerLine =
     markerLabel && markerLabel !== destination.name
-      ? `<p style="margin:0 0 8px; font-size: 11px; color: rgba(22,36,28,0.5);">Map point: ${markerLabel}</p>`
+      ? `<p style="margin:0 0 8px; font-size: 11px; color: rgba(22,36,28,0.5);">Map point: ${escapeHtml(markerLabel)}</p>`
       : "";
+  const notice = getAvailabilityNotice(destination);
+  const statusLine = notice
+    ? `<p style="margin:0 0 8px;">${availabilityPillHtml(notice.status)}</p>`
+    : "";
   return `
     <div style="font-family: var(--font-public-sans), system-ui, sans-serif; padding: 4px 2px; min-width: 180px;">
-      <p style="margin:0 0 4px; font-family: var(--font-fraunces), serif; font-size: 15px; color:#16241C;">${destination.name}</p>
+      <p style="margin:0 0 4px; font-family: var(--font-fraunces), serif; font-size: 15px; color:#16241C;">${escapeHtml(destination.name)}</p>
       <p style="margin:0 0 8px; font-size: 12px; color: rgba(22,36,28,0.6);">
-        ${difficultyLabel[destination.difficulty]} · ${destination.trailDistanceMiles} mi · $${destination.estimatedTripCost}
+        ${difficultyLabel[destination.difficulty]} · ${destination.trailDistanceMiles} mi · Est. $${destination.estimatedTripCost}
       </p>
       ${markerLine}
-      <p style="margin:0 0 10px; font-size: 12px; color:#BC5B2E; font-weight: 600;">
-        ${destination.adventureMatchScore}% Adventure Match
+      ${statusLine}
+      <p style="margin:0 0 4px; font-size: 12px; color:#BC5B2E; font-weight: 600;">
+        Sample match: ${destination.adventureMatchScore}%
       </p>
-      <a href="/adventure/${destination.id}" style="display:inline-block; background:#1F3626; color:#F3F1E8; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 999px; text-decoration: none;">
+      <p style="margin:0 0 10px; font-size: 11px; color: rgba(22,36,28,0.5);">${escapeHtml(SAMPLE_LABEL)}</p>
+      <a href="/adventure/${escapeHtml(destination.id)}" style="display:inline-block; background:#1F3626; color:#F3F1E8; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 999px; text-decoration: none;">
         View Adventure
       </a>
     </div>
@@ -109,6 +122,15 @@ export function DiscoverResults({
             onChange={setSort}
             resultCount={results.length}
           />
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <SampleDataBadge />
+            <span className="text-xs text-ink/60">
+              Costs, travel times and match scores are sample values, and Best
+              Match sorts by a sample score. Map points are checked against
+              official sources.
+            </span>
+          </div>
 
           <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_320px]">
             <div>

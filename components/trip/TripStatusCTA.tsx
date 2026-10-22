@@ -12,10 +12,21 @@ export function TripStatusCTA({
   plan: TripPlan;
 }) {
   const [saved, setSaved] = useState(false);
+  // A plan with a notice (e.g. a closure) cannot be followed as written.
+  const cannotFollow = Boolean(plan.notice);
 
   return (
     <section className="flex flex-col items-center gap-4 rounded-card border border-mist bg-pine px-6 py-10 text-center text-paper shadow-soft sm:px-10">
-      <h2 className="font-display text-2xl">Your trip is ready</h2>
+      <h2 className="font-display text-2xl">
+        {cannotFollow
+          ? "This sample plan can't be followed today"
+          : "Your sample plan is ready"}
+      </h2>
+      {cannotFollow && (
+        <p className="max-w-md text-sm text-paper/80">
+          See the notice at the top of this page before planning anything.
+        </p>
+      )}
 
       <div className="text-sm text-paper/80">
         <p className="font-display text-lg text-paper">{destination.name}</p>
@@ -23,7 +34,7 @@ export function TripStatusCTA({
         <p>
           {plan.departure} – {plan.estimatedArrivalHome}
         </p>
-        <p>Estimated total: ${destination.estimatedTripCost}</p>
+        <p>Sample estimate: ${destination.estimatedTripCost}</p>
       </div>
 
       <div className="mt-2 flex flex-wrap justify-center gap-3">
@@ -37,7 +48,7 @@ export function TripStatusCTA({
               : "rounded-pill bg-clay px-6 py-3 font-medium text-paper transition-colors hover:bg-clay-dark"
           }
         >
-          {saved ? "Trip Saved ✓" : "Save This Trip"}
+          {saved ? "Plan Saved ✓" : "Save This Plan"}
         </button>
 
         <Link

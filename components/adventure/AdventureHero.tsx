@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { DiscoverDestination } from "@/lib/types";
 import { formatTravelTime } from "@/lib/format";
+import { getAvailabilityNotice } from "@/lib/status-labels";
+import { AvailabilityBadge } from "@/components/ui/AvailabilityBadge";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const gradientClass: Record<DiscoverDestination["imageGradient"], string> = {
   "trail-1": "bg-trail-1",
@@ -30,6 +33,8 @@ export function AdventureHero({
 }: {
   destination: DiscoverDestination;
 }) {
+  const notice = getAvailabilityNotice(destination);
+
   return (
     <section
       className={`relative overflow-hidden ${gradientClass[destination.imageGradient]}`}
@@ -45,6 +50,13 @@ export function AdventureHero({
               {destination.name}
             </h1>
             <p className="mt-1 text-paper/75">{destination.region}</p>
+            {notice && (
+              <AvailabilityBadge
+                status={notice.status}
+                variant="dark"
+                className="mt-3"
+              />
+            )}
           </div>
 
           <div
@@ -55,7 +67,7 @@ export function AdventureHero({
             <span className="font-display text-2xl">
               {destination.adventureMatchScore}%
             </span>
-            <span className="text-xs opacity-80">Adventure Match</span>
+            <span className="text-xs opacity-80">Sample match</span>
           </div>
         </div>
 
@@ -74,19 +86,30 @@ export function AdventureHero({
           </div>
           <div>
             <dt className="sr-only">Travel time</dt>
-            <dd>{formatTravelTime(destination.estimatedTravelTimeMinutes)} away</dd>
+            <dd>About {formatTravelTime(destination.estimatedTravelTimeMinutes)} from New York</dd>
           </div>
           <div>
             <dt className="sr-only">Estimated cost</dt>
-            <dd>~${destination.estimatedTripCost} per trip</dd>
+            <dd>Est. ~${destination.estimatedTripCost} per trip</dd>
           </div>
           <div>
             <dt className="sr-only">Car-free friendly</dt>
             <dd>
-              {destination.carFreeFriendly ? "Car-free friendly" : "Car required"}
+              {destination.carFreeFriendly
+                ? notice
+                  ? "Car-free friendly in normal conditions"
+                  : "Car-free friendly"
+                : "Car required"}
             </dd>
           </div>
         </dl>
+
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <SampleDataBadge variant="dark" />
+          <span className="text-xs text-paper/70">
+            The match score, travel time and cost are sample estimates.
+          </span>
+        </div>
       </div>
     </section>
   );

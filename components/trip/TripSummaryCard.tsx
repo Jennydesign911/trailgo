@@ -1,4 +1,5 @@
 import { TrailDayPlan, TripPlan } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const difficultyLabel: Record<TrailDayPlan["difficulty"], string> = {
   easy: "Easy",
@@ -24,14 +25,20 @@ export function TripSummaryCard({
   const rows: { label: string; value: string }[] = [
     { label: "Departure", value: plan.departure },
     { label: "Arrival at trail", value: plan.arrivalAtTrail },
-    { label: "Trail time", value: plan.trailStartTime },
+    { label: "Hike starts", value: plan.trailStartTime },
     { label: "Return time", value: plan.returnTime },
     { label: "Estimated arrival home", value: plan.estimatedArrivalHome },
   ];
 
   return (
     <section className="rounded-card border border-mist bg-white/70 p-6 shadow-soft sm:p-8">
-      <h2 className="font-display text-2xl text-ink">Your Day at a Glance</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">A Sample Day at a Glance</h2>
+        <SampleDataBadge />
+      </div>
+      <p className="mt-1 text-sm text-ink/60">
+        Clock times, durations and costs are illustrative placeholders.
+      </p>
 
       <dl className="mt-5 grid gap-x-6 gap-y-3 sm:grid-cols-2">
         {rows.map((row) => (
@@ -62,7 +69,7 @@ export function TripSummaryCard({
           </p>
         </div>
         <div>
-          <p className="text-xs text-ink/50">Estimated cost</p>
+          <p className="text-xs text-ink/50">Sample estimate</p>
           <p className="mt-1 font-display text-lg text-clay-dark">
             ${estimatedTripCost}
           </p>

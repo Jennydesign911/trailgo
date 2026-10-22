@@ -1,4 +1,5 @@
 import { TripTimelineStep } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const kindDot: Record<TripTimelineStep["kind"], string> = {
   depart: "bg-ink",
@@ -53,7 +54,13 @@ function stepIcon(kind: TripTimelineStep["kind"]) {
 export function TripTimelineSection({ steps }: { steps: TripTimelineStep[] }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-ink">Door-to-Trail Timeline</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">Door-to-Trail Timeline</h2>
+        <SampleDataBadge />
+      </div>
+      <p className="mt-1 text-sm text-ink/60">
+        Times are illustrative, not real train, bus or ferry schedules.
+      </p>
 
       <ol className="mt-5 border-l border-mist pl-6 sm:pl-8">
         {steps.map((step) => (

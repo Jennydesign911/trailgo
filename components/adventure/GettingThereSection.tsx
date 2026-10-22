@@ -1,5 +1,6 @@
 import { TransportationDetails } from "@/lib/types";
 import { formatTravelTime } from "@/lib/format";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 function CarIcon() {
   return (
@@ -33,13 +34,23 @@ function TransitIcon() {
 export function GettingThereSection({
   details,
   carFreeFriendly,
+  hasClosureNotice = false,
 }: {
   details: TransportationDetails;
   carFreeFriendly: boolean;
+  /** True when a source reports this destination closed or temporarily unavailable. */
+  hasClosureNotice?: boolean;
 }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-ink">Getting There</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">Getting There</h2>
+        <SampleDataBadge />
+      </div>
+      <p className="mt-1 text-sm text-ink/60">
+        Travel times, parking details and connections are sample estimates,
+        measured from New York.
+      </p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         <div className="rounded-card border border-mist bg-white/70 p-5 shadow-soft">
@@ -63,8 +74,16 @@ export function GettingThereSection({
             <>
               {carFreeFriendly && (
                 <span className="mt-2 inline-block rounded-pill bg-moss/10 px-3 py-1 text-xs font-medium text-moss">
-                  Car-free friendly
+                  {hasClosureNotice
+                    ? "Car-free friendly in normal conditions"
+                    : "Car-free friendly"}
                 </span>
+              )}
+              {hasClosureNotice && (
+                <p className="mt-2 text-sm text-clay-dark">
+                  This destination is reported closed or temporarily
+                  unavailable. See the notice at the top of this page.
+                </p>
               )}
               <ol className="mt-3 space-y-1.5 text-sm text-ink/80">
                 {details.publicTransit.steps.map((step, index) => (

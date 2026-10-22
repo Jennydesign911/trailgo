@@ -1,4 +1,5 @@
 import { TripCostItem } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 export function TripCostSection({
   items,
@@ -11,7 +12,10 @@ export function TripCostSection({
 
   return (
     <section className="rounded-card border border-mist bg-white/70 p-6 shadow-soft sm:p-8">
-      <h2 className="font-display text-2xl text-ink">Cost Breakdown</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">Cost Breakdown</h2>
+        <SampleDataBadge />
+      </div>
       <p className="mt-1 text-sm text-ink/60">
         Rough per-person estimate for this specific plan.
       </p>

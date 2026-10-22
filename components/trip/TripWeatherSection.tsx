@@ -1,4 +1,5 @@
 import { TripWeatherWindow } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const conditionIcon: Record<string, string> = {
   Sunny: "☀️",
@@ -20,7 +21,10 @@ export function TripWeatherSection({
 }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-ink">Weather + Plan Notes</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">Weather + Plan Notes</h2>
+        <SampleDataBadge />
+      </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {windows.map((entry) => (

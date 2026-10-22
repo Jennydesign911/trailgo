@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DiscoverDestination, TripPlan } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const gradientClass: Record<DiscoverDestination["imageGradient"], string> = {
   "trail-1": "bg-trail-1",
@@ -32,9 +33,12 @@ export function TripHero({
         <p className="mt-1 text-paper/75">{destination.region}</p>
 
         <div className="mt-6 rounded-card border border-paper/20 bg-paper/10 p-5 backdrop-blur-sm sm:p-6">
-          <p className="text-sm text-paper/60">Your Door-to-Trail Plan</p>
+          <p className="text-sm text-paper/60">Sample Door-to-Trail Itinerary</p>
           <p className="mt-1 font-display text-xl text-paper">{plan.tripDate}</p>
           <p className="mt-2 text-sm text-paper/80">{plan.summary}</p>
+          <div className="mt-3">
+            <SampleDataBadge variant="dark" />
+          </div>
 
           <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper/90">
             <div>
@@ -43,11 +47,11 @@ export function TripHero({
             </div>
             <div>
               <dt className="sr-only">Adventure Match</dt>
-              <dd>{destination.adventureMatchScore}% match</dd>
+              <dd>Sample match score: {destination.adventureMatchScore}%</dd>
             </div>
             <div>
               <dt className="sr-only">Estimated total</dt>
-              <dd>Estimated total: ${destination.estimatedTripCost}</dd>
+              <dd>Sample estimate: ${destination.estimatedTripCost}</dd>
             </div>
           </dl>
         </div>

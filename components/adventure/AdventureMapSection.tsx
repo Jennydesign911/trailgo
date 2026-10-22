@@ -5,21 +5,20 @@ import {
   markerKindColor,
   markerKindLabel,
 } from "@/components/map/TrailMarker";
-
-// Popup text comes from our own data, but escape it anyway so a stray
-// "<" or "&" can never break the popup.
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+import {
+  availabilityPopupHtml,
+  escapeHtml,
+  formatCheckedDate,
+  isClosure,
+} from "@/lib/status-labels";
+import { AvailabilityBadge } from "@/components/ui/AvailabilityBadge";
 
 /** Popup shown when a marker is clicked or tapped: name, type, official source link. */
 function buildPopupHtml(kind: MapMarkerKind, location: VerifiedLocation): string {
   const hasLink = /^https?:\/\//.test(location.sourceUrl);
-  const note = location.note
+  // Closure text comes from the structured availability fields; `note` is only
+  // shown here for general caveats, so the same warning never appears twice.
+  const note = location.note && !location.availabilityNote
     ? `<p style="margin:8px 0 0; font-size:12px; line-height:1.4; color:#9A4A23;">${escapeHtml(location.note)}</p>`
     : "";
   const link = hasLink
@@ -32,6 +31,7 @@ function buildPopupHtml(kind: MapMarkerKind, location: VerifiedLocation): string
         <span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:${markerKindColor[kind]}; margin-right:6px;"></span>${markerKindLabel[kind]}
       </p>
       <p style="margin:6px 0 0; font-size:12px; color:rgba(22,36,28,0.55);">Source: ${escapeHtml(location.source)}</p>
+      ${availabilityPopupHtml(location)}
       ${note}
       ${link}
     </div>
@@ -105,7 +105,12 @@ export function AdventureMapSection({
   }));
 
   const routePoints = points.map((p) => p.coordinates);
-  const notes = shown.filter((entry) => entry.location.note);
+  // Closures come from the structured availability fields; free-text notes are
+  // only for other caveats (e.g. "this marks one area, not the whole seashore").
+  const closures = shown.filter((entry) => isClosure(entry.location.availability));
+  const caveats = shown.filter(
+    (entry) => entry.location.note && !entry.location.availabilityNote
+  );
 
   return (
     <section>
@@ -137,15 +142,40 @@ export function AdventureMapSection({
         </p>
       )}
 
-      {notes.length > 0 && (
+      {closures.length > 0 && (
+        <ul className="mt-3 space-y-3">
+          {closures.map((entry) => (
+            <li
+              key={entry.id}
+              className="rounded-card border border-clay/40 bg-clay/10 p-4 text-sm"
+            >
+              <AvailabilityBadge status={entry.location.availability} />
+              <p className="mt-2 font-medium text-ink">{entry.location.label}</p>
+              <p className="mt-1 text-clay-dark">{entry.location.availabilityNote}</p>
+              <p className="mt-1 text-xs text-ink/60">
+                Last checked {formatCheckedDate(entry.location.lastChecked)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {caveats.length > 0 && (
         <ul className="mt-3 space-y-1 text-sm text-clay-dark">
-          {notes.map((entry) => (
+          {caveats.map((entry) => (
             <li key={entry.id}>
               <span className="font-medium">{entry.location.label}:</span>{" "}
               {entry.location.note}
             </li>
           ))}
         </ul>
+      )}
+
+      {shown.length > 0 && (
+        <p className="mt-3 text-xs text-ink/60">
+          A map point confirms where a place is, not that it is open. Check
+          current availability before you go.
+        </p>
       )}
 
       {shown.length > 0 && (
@@ -162,7 +192,8 @@ export function AdventureMapSection({
                   className="underline hover:text-clay"
                 >
                   {entry.location.source}
-                </a>
+                </a>{" "}
+                (checked {formatCheckedDate(entry.location.lastChecked)})
               </li>
             ))}
           </ul>

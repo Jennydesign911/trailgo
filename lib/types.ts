@@ -16,6 +16,33 @@ export interface LabeledCoordinates extends Coordinates {
 }
 
 /**
+ * Whether a piece of content has been checked against a real source.
+ * Anything without an explicit "verified" is treated as "sample": hand-written
+ * placeholder data that may be wrong and must never be shown as a confirmed
+ * real-world recommendation.
+ */
+export type DataStatus = "sample" | "verified";
+
+/**
+ * Whether a real-world place can be used right now. A verified coordinate only
+ * proves WHERE a place is, never that it is open — so this defaults to
+ * "unknown" and is only set to something else when a source says so.
+ */
+export type AvailabilityStatus =
+  | "open"
+  | "temporarily_unavailable"
+  | "closed"
+  | "unknown";
+
+/** A citable page and the date it was last read. */
+export interface SourceRef {
+  name: string;
+  url: string;
+  /** ISO date (YYYY-MM-DD) when this page was last read. */
+  lastChecked: string;
+}
+
+/**
  * A map location that has been checked against a named, citable source
  * (for example NY State Parks, NY DEC or the National Park Service).
  *
@@ -28,7 +55,13 @@ export interface VerifiedLocation extends LabeledCoordinates {
   source: string;
   /** Page the coordinate was read from. */
   sourceUrl: string;
-  /** Optional caveat shown under the map, e.g. a closure notice. */
+  /** ISO date (YYYY-MM-DD) when `sourceUrl` was last read. */
+  lastChecked: string;
+  /** Current availability. Omitted = "unknown" (a coordinate alone never implies "open"). */
+  availability?: AvailabilityStatus;
+  /** What the source says about availability, e.g. a closure notice and its dates. */
+  availabilityNote?: string;
+  /** Optional caveat shown under the map. Closure text is repeated here until the UI reads `availability`. */
   note?: string;
 }
 
@@ -61,6 +94,8 @@ export interface Destination {
   reachableBy: TransportationMode[];
   estimatedCost: number;
   imageGradient: "trail-1" | "trail-2" | "trail-3";
+  /** Shown on the card when something important is known, e.g. a closure. */
+  notice?: string;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -96,6 +131,11 @@ export interface DiscoverDestination {
    * simply not drawn on the map (and the page says so).
    */
   coordinates?: VerifiedLocation;
+  /**
+   * Status of the non-location fields (cost, travel time, rating, match score).
+   * Omitted = "sample".
+   */
+  dataStatus?: DataStatus;
   /**
    * Phase 3 detail-page data (match breakdown, trails, getting there, stay
    * options, cost breakdown, weather). Optional so any destination without
@@ -144,6 +184,8 @@ export interface Trail {
   difficulty: Difficulty;
   routeType: TrailRouteType;
   description: string;
+  /** Omitted = "sample" (distance, duration and elevation are not verified). */
+  dataStatus?: DataStatus;
 }
 
 export interface DrivingDetails {
@@ -170,9 +212,21 @@ export interface StayOption {
   id: string;
   name: string;
   type: StayType;
+  /** Sample value unless `dataStatus` says otherwise. */
   nightlyCost: number;
-  distanceFromTrailMiles: number;
+  /** Omitted when the distance is unknown or was found to be wrong. */
+  distanceFromTrailMiles?: number;
   description: string;
+  /**
+   * The verified map location for this stay, when one exists. Points at the
+   * SAME object used for the map marker, so the stay card and the map can
+   * never disagree (for example about a closure).
+   */
+  location?: VerifiedLocation;
+  /** Where we confirmed this place exists, when a source has been found. */
+  existenceSource?: SourceRef;
+  /** Applies to price, distance and description. Omitted = "sample". */
+  dataStatus?: DataStatus;
 }
 
 export interface CostBreakdownItem {
@@ -300,5 +354,7 @@ export interface TripPlan {
   costBreakdown: TripCostItem[];
   weatherWindows: TripWeatherWindow[];
   weatherRecommendation: string;
+  /** Shown prominently when the plan cannot currently be followed, e.g. a closure. */
+  notice?: string;
 }
 

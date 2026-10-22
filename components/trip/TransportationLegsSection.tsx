@@ -1,4 +1,5 @@
 import { TransportationLeg } from "@/lib/types";
+import { SampleDataBadge } from "@/components/ui/SampleDataBadge";
 
 const modeLabel: Record<TransportationLeg["mode"], string> = {
   transit: "Transit",
@@ -15,7 +16,14 @@ export function TransportationLegsSection({
 }) {
   return (
     <section>
-      <h2 className="font-display text-2xl text-ink">Transportation Details</h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="font-display text-2xl text-ink">Transportation Details</h2>
+        <SampleDataBadge />
+      </div>
+      <p className="mt-1 text-sm text-ink/60">
+        Fares, departure times and connections have not been checked against
+        real schedules.
+      </p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
         {legs.map((leg) => (
@@ -32,51 +40,56 @@ export function TransportationLegsSection({
             </p>
 
             {leg.mode === "driving" ? (
-              <dl className="mt-3 space-y-1.5 text-sm text-ink/80">
-                <div className="flex justify-between">
-                  <dt className="text-ink/50">Drive time</dt>
-                  <dd>{leg.durationMinutes} min</dd>
-                </div>
-                {leg.distanceMiles && (
+              <>
+                <dl className="mt-3 space-y-1.5 text-sm text-ink/80">
                   <div className="flex justify-between">
-                    <dt className="text-ink/50">Distance</dt>
-                    <dd>{leg.distanceMiles} mi</dd>
+                    <dt className="text-ink/50">Drive time</dt>
+                    <dd>{leg.durationMinutes} min</dd>
                   </div>
-                )}
-                {leg.estimatedDriveCost !== undefined && (
-                  <div className="flex justify-between">
-                    <dt className="text-ink/50">Est. fuel/tolls</dt>
-                    <dd>${leg.estimatedDriveCost}</dd>
-                  </div>
-                )}
+                  {leg.distanceMiles && (
+                    <div className="flex justify-between">
+                      <dt className="text-ink/50">Distance</dt>
+                      <dd>{leg.distanceMiles} mi</dd>
+                    </div>
+                  )}
+                  {leg.estimatedDriveCost !== undefined && (
+                    <div className="flex justify-between">
+                      <dt className="text-ink/50">Est. fuel/tolls</dt>
+                      <dd>${leg.estimatedDriveCost}</dd>
+                    </div>
+                  )}
+                </dl>
+                {/* Notes sit outside the <dl>: a definition list may only contain terms and descriptions. */}
                 {leg.parkingInfo && (
-                  <p className="pt-1 text-ink/60">{leg.parkingInfo}</p>
+                  <p className="mt-1.5 text-sm text-ink/60">{leg.parkingInfo}</p>
                 )}
-              </dl>
+              </>
             ) : (
-              <dl className="mt-3 space-y-1.5 text-sm text-ink/80">
-                {leg.departure && leg.arrival && (
+              <>
+                <dl className="mt-3 space-y-1.5 text-sm text-ink/80">
+                  {leg.departure && leg.arrival && (
+                    <div className="flex justify-between">
+                      <dt className="text-ink/50">Departs / arrives</dt>
+                      <dd>
+                        {leg.departure} → {leg.arrival}
+                      </dd>
+                    </div>
+                  )}
                   <div className="flex justify-between">
-                    <dt className="text-ink/50">Departs / arrives</dt>
-                    <dd>
-                      {leg.departure} → {leg.arrival}
-                    </dd>
+                    <dt className="text-ink/50">Duration</dt>
+                    <dd>{leg.durationMinutes} min</dd>
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <dt className="text-ink/50">Duration</dt>
-                  <dd>{leg.durationMinutes} min</dd>
-                </div>
-                {leg.fare !== undefined && (
-                  <div className="flex justify-between">
-                    <dt className="text-ink/50">Approx. fare</dt>
-                    <dd>${leg.fare}</dd>
-                  </div>
-                )}
+                  {leg.fare !== undefined && (
+                    <div className="flex justify-between">
+                      <dt className="text-ink/50">Approx. fare</dt>
+                      <dd>${leg.fare}</dd>
+                    </div>
+                  )}
+                </dl>
                 {leg.transferInfo && (
-                  <p className="pt-1 text-ink/60">{leg.transferInfo}</p>
+                  <p className="mt-1.5 text-sm text-ink/60">{leg.transferInfo}</p>
                 )}
-              </dl>
+              </>
             )}
           </article>
         ))}
